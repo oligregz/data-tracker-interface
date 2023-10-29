@@ -1,40 +1,55 @@
-import { useState, useEffect } from 'react';
-import InputMask from 'react-input-mask';
+import { useState, useEffect } from 'react'
+import InputMask from 'react-input-mask'
+import postUser from '../../service/postUser'
 
 const FormUser = () => {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
     telephone: '',
-  });
+  })
 
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false)
 
   useEffect(() => {
-    console.log('Form Data:', formData);
-  }, [formData]);
+  }, [formData])
 
   const handleFieldChange = (event) => {
-    const { id, value } = event.target;
+    const { id, value } = event.target
     setFormData((prevData) => ({
       ...prevData,
       [id]: value,
-    }));
-  };
+    }))
+  }
 
   useEffect(() => {
-    const isValid = Object.values(formData).every((value) => value.trim() !== '');
-    setIsFormValid(isValid);
-  }, [formData]);
+    const isValid = Object.values(formData).every((value) => value.trim() !== '')
+    setIsFormValid(isValid)
+  }, [formData])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     if (isFormValid) {
-      console.log('Formulário enviado:', formData);
+      const user = await registerUser(formData)
+      console.log('Usuário registrado:', user)
     } else {
-      alert('Por favor, preencha todos os campos.');
+      alert('Por favor, preencha todos os campos.')
     }
-  };
+  }
+
+  const registerUser = async (formData) => {
+    try {
+      const response = await postUser(formData)
+      if (response) {
+        return response
+      } else {
+        throw new Error('Erro ao obter o link')
+      }
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
 
   return (
     <div className="form-user">
@@ -74,12 +89,16 @@ const FormUser = () => {
             onChange={handleFieldChange}
           />
         </div>
-        <button type="submit" className="btn btn-primary" disabled={!isFormValid}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={!isFormValid}
+        >
           Ver fotos
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default FormUser;
+export default FormUser

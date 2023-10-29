@@ -1,37 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import InputMask from 'react-input-mask';
 
 const FormUser = () => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [telephone, setTelephone] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    name: '',
+    telephone: '',
+  });
+
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    console.log('Email:', email);
-  }, [email]);
+    console.log('Form Data:', formData);
+  }, [formData]);
 
-  useEffect(() => {
-    console.log('Nome Completo:', name);
-  }, [name]);
-
-  useEffect(() => {
-    console.log('Telefone/Whatsapp:', telephone);
-  }, [telephone]);
-
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleFieldChange = (event) => {
+    const { id, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
   };
 
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
+  useEffect(() => {
+    const isValid = Object.values(formData).every((value) => value.trim() !== '');
+    setIsFormValid(isValid);
+  }, [formData]);
 
-  const handleTelephoneChange = (event) => {
-    setTelephone(event.target.value);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (isFormValid) {
+      console.log('Formulário enviado:', formData);
+    } else {
+      alert('Por favor, preencha todos os campos.');
+    }
   };
 
   return (
     <div className="form-user">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="exampleInputEmail1">Email</label>
           <input
@@ -40,8 +47,8 @@ const FormUser = () => {
             id="email"
             aria-describedby="emailHelp"
             placeholder="ex: seuemail@gemail.com"
-            value={email}
-            onChange={handleEmailChange}
+            value={formData.email}
+            onChange={handleFieldChange}
           />
         </div>
         <div className="form-group">
@@ -51,22 +58,23 @@ const FormUser = () => {
             className="form-control"
             id="name"
             placeholder="ex: João Severino Andrade"
-            value={name}
-            onChange={handleNameChange}
+            value={formData.name}
+            onChange={handleFieldChange}
           />
         </div>
         <div className="form-group">
           <label htmlFor="exampleInputPassword1">Telefone/Whatsapp</label>
-          <input
+          <InputMask
+            mask="(99) 99999-9999"
             type="text"
             className="form-control"
             id="telephone"
-            placeholder="ex: 099 999999999"
-            value={telephone}
-            onChange={handleTelephoneChange}
+            placeholder="ex: (99) 99999-9999"
+            value={formData.telephone}
+            onChange={handleFieldChange}
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary" disabled={!isFormValid}>
           Ver fotos
         </button>
       </form>

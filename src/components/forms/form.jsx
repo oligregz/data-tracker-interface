@@ -8,12 +8,13 @@ const FormUser = () => {
     name: '',
     telephone: '',
   })
-
+  
+  
   const [isFormValid, setIsFormValid] = useState(false)
-
+  
   useEffect(() => {
   }, [formData])
-
+  
   const handleFieldChange = (event) => {
     const { id, value } = event.target
     setFormData((prevData) => ({
@@ -21,17 +22,27 @@ const FormUser = () => {
       [id]: value,
     }))
   }
-
+  
   useEffect(() => {
     const isValid = Object.values(formData).every((value) => value.trim() !== '')
     setIsFormValid(isValid)
   }, [formData])
+  
+  const redirect = (status) => {
+    const url = `https://drive.google.com/drive/folders/1Y1zfw36-D3NE3ZV2uwrKk7mrzYNvBNJZ?usp=sharing`
+ 
+    if (!status) {
+      alert('Prencha os campos corretamente')
+    }
+    window.open(url, '_blank');
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (isFormValid) {
       const user = await registerUser(formData)
       console.log('Usuário registrado:', user)
+      redirect(user.status_req);
     } else {
       alert('Por favor, preencha todos os campos.')
     }

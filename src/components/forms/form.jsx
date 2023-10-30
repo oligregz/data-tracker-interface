@@ -9,41 +9,47 @@ const FormUser = () => {
     name: '',
     telephone: '',
   })
-  
-  
+
   const [isFormValid, setIsFormValid] = useState(false)
-  
-  useEffect(() => {
-  }, [formData])
-  
-  const handleFieldChange = (event) => {
-    const { id, value } = event.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }))
-  }
-  
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   useEffect(() => {
     const isValid = Object.values(formData).every((value) => value.trim() !== '')
     setIsFormValid(isValid)
   }, [formData])
-  
+
+  const handleFieldChange = (event) => {
+    if (!isSubmitting) {
+      const { id, value } = event.target
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }))
+    }
+  }
+
   const redirect = (status) => {
     const url = `https://drive.google.com/drive/folders/1Y1zfw36-D3NE3ZV2uwrKk7mrzYNvBNJZ?usp=sharing`
- 
+
     if (!status) {
-      alert('Prencha os campos corretamente')
+      alert('Preencha os campos corretamente')
     }
-    window.open(url, '_blank');
+    window.open(url, '_blank')
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    if (isFormValid) {
-      const user = await registerUser(formData)
-      console.log('Usuário registrado:', user)
-      redirect(user.status_req);
+    if (isFormValid && !isSubmitting) {
+      setIsSubmitting(true)
+      try {
+        const user = await registerUser(formData)
+        console.log('Usuário registrado:', user)
+        redirect(user.status_req)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsSubmitting(false)
+      }
     } else {
       alert('Por favor, preencha todos os campos.')
     }
@@ -76,6 +82,7 @@ const FormUser = () => {
             placeholder="ex: seuemail@gemail.com"
             value={formData.email}
             onChange={handleFieldChange}
+            disabled={isSubmitting}
           />
         </div>
         <div className="form-group">
@@ -87,6 +94,7 @@ const FormUser = () => {
             placeholder="ex: João Severino Andrade"
             value={formData.name}
             onChange={handleFieldChange}
+            disabled={isSubmitting}
           />
         </div>
         <div className="form-group">
@@ -99,14 +107,15 @@ const FormUser = () => {
             placeholder="ex: (99) 99999-9999"
             value={formData.telephone}
             onChange={handleFieldChange}
+            disabled={isSubmitting}
           />
         </div>
         <button
           type="submit"
           className="btn btn-primary"
-          disabled={!isFormValid}
+          disabled={!isFormValid || isSubmitting}
         >
-          Ver fotos
+          {isSubmitting ? 'Enviando...' : 'Ver fotos'}
         </button>
       </form>
     </div>

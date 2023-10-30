@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import InputMask from 'react-input-mask'
 import postUser from '../../service/postUser'
+import './style.css'
 
 const FormUser = () => {
   const [formData, setFormData] = useState({
